@@ -5,14 +5,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Wallet {
+
+    // TODO: this field should be private
     public PrivateKey privateKey;
-    public PublicKey publicKey;
+    private PublicKey publicKey;
 
     public HashMap<String, TransactionOutput> UTXOs = new HashMap<>(); //only UTXOs owned by this wallet.
 
-    public Wallet(PrivateKey privateKey, PublicKey publicKey){
-        this.privateKey = privateKey;
-        this.publicKey = publicKey;
+    public Wallet(KeyPair key){
+        this.privateKey = key.getPrivate();
+        this.publicKey = key.getPublic();
+    }
+
+    public PublicKey getPublicKey(){
+        return publicKey;
     }
 
     //returns balance and stores the UTXO's owned by this wallet in this.UTXOs
