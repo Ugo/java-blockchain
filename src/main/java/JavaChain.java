@@ -18,9 +18,9 @@ public class JavaChain {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
 
         //Create wallets:
-        walletA = new Wallet();
-        walletB = new Wallet();
-        Wallet coinbase = new Wallet();
+        walletA = WalletFactory.generateNewWallet();
+        walletB = WalletFactory.generateNewWallet();
+        Wallet coinbase = WalletFactory.generateNewWallet();
 
         //create genesis transaction, which sends 100 NoobCoin to walletA:
         genesisTransaction = new Transaction(coinbase.publicKey, walletA.publicKey, 100f, null);

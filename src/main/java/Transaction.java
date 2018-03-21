@@ -1,6 +1,8 @@
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Transaction {
 
@@ -15,7 +17,6 @@ public class Transaction {
 
     private static int sequence = 0; // a rough count of how many transactions have been generated.
 
-    // Constructor:
     public Transaction(PublicKey from, PublicKey to, float value, ArrayList<TransactionInput> inputs) {
         this.sender = from;
         this.reciepient = to;
@@ -96,10 +97,15 @@ public class Transaction {
 
     //returns sum of outputs:
     public float getOutputsValue() {
-        float total = 0;
-        for (TransactionOutput o : outputs) {
-            total += o.value;
-        }
-        return total;
+        return outputs.stream()
+                .map(transactionOutput -> transactionOutput.value)
+                .reduce(Float::sum)
+                .get();
+
+        // float total = 0;
+        // for (TransactionOutput output : outputs) {
+        //    total += output.value;
+        //}
+        //return total;
     }
 }

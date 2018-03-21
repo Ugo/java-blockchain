@@ -5,29 +5,23 @@ public class Block {
 
     private String hash;
     private String previousHash;
-    private String merkleRoot;
     private ArrayList<Transaction> transactions = new ArrayList<>();
     private long timeStamp;
     private int nonce;
+    private boolean isBlockMined;
 
     Block(String previousHash) {
         this.previousHash = previousHash;
         this.timeStamp = new Date().getTime();
-
-        // this should be called last
-        this.hash = calculateHash();
+        this.isBlockMined = false;
     }
 
-    public String getHash(){
+    public String getHash() {
         return hash;
     }
 
     public String getPreviousHash() {
         return previousHash;
-    }
-
-    public String getMerkleRoot() {
-        return merkleRoot;
     }
 
     public ArrayList<Transaction> getTransactions() {
@@ -36,6 +30,7 @@ public class Block {
 
     //Calculate new hash based on blocks contents
     public String calculateHash() {
+        String merkleRoot = StringUtil.getMerkleRoot(transactions);
         return StringUtil.applySha256(
                 previousHash +
                         Long.toString(timeStamp) +
@@ -46,12 +41,13 @@ public class Block {
 
     //Increases nonce value until hash target is reached.
     public void mineBlock(int difficulty) {
-        merkleRoot = StringUtil.getMerkleRoot(transactions);
         String target = new String(new char[difficulty]).replace('\0', '0'); //Create a string with difficulty * "0"
+        hash = calculateHash();
         while (!hash.substring(0, difficulty).equals(target)) {
             nonce++;
             hash = calculateHash();
         }
+        isBlockMined = true;
         System.out.println("Block Mined!!! : " + hash);
     }
 
