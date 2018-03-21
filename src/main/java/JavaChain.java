@@ -56,10 +56,8 @@ public class JavaChain {
         addBlock(block3);
         System.out.println("\nWalletA's balance is: " + walletA.getBalance());
         System.out.println("WalletB's balance is: " + walletB.getBalance());
-
-
+        
         isChainValid();
-
     }
 
     public static Boolean isChainValid() {
