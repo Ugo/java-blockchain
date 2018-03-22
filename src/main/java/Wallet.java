@@ -10,7 +10,8 @@ public class Wallet {
     public PrivateKey privateKey;
     private PublicKey publicKey;
 
-    public HashMap<String, TransactionOutput> UTXOs = new HashMap<>(); //only UTXOs owned by this wallet.
+    //only UTXOs owned by this wallet.
+    public HashMap<String, TransactionOutput> UTXOs = new HashMap<>();
 
     public Wallet(KeyPair key){
         this.privateKey = key.getPrivate();

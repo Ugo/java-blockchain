@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 public class JavaChain {
 
+    // TODO: this class should be a singleton since there is only one chain
+
     public static ArrayList<Block> blockchain = new ArrayList<>();
     public static HashMap<String, TransactionOutput> UTXOs = new HashMap<>();
 
@@ -13,6 +15,8 @@ public class JavaChain {
     public static Wallet walletB;
     public static Transaction genesisTransaction;
 
+
+    // TODO: everything done in this method should be done in a separate class
     public static void main(String[] args) {
         //add our blocks to the blockchain ArrayList:
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
@@ -68,10 +72,11 @@ public class JavaChain {
         tempUTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0));
 
         //loop through blockchain to check hashes:
-        for (int i = 1; i < blockchain.size(); i++) {
+        for (int iterBlock = 1; iterBlock < blockchain.size(); iterBlock++) {
 
-            currentBlock = blockchain.get(i);
-            previousBlock = blockchain.get(i - 1);
+            currentBlock = blockchain.get(iterBlock);
+            previousBlock = blockchain.get(iterBlock - 1);
+
             //compare registered hash and calculated hash:
             if (!currentBlock.getHash().equals(currentBlock.calculateHash())) {
                 System.out.println("#Current Hashes not equal");
@@ -90,15 +95,15 @@ public class JavaChain {
 
             //loop thru blockchains transactions:
             TransactionOutput tempOutput;
-            for (int t = 0; t < currentBlock.getTransactions().size(); t++) {
-                Transaction currentTransaction = currentBlock.getTransactions().get(t);
+            for (int iterTransaction = 0; iterTransaction < currentBlock.getTransactions().size(); iterTransaction++) {
+                Transaction currentTransaction = currentBlock.getTransactions().get(iterTransaction);
 
                 if (!currentTransaction.verifiySignature()) {
-                    System.out.println("#Signature on Transaction(" + t + ") is Invalid");
+                    System.out.println("#Signature on Transaction(" + iterTransaction + ") is Invalid");
                     return false;
                 }
                 if (currentTransaction.getInputsValue() != currentTransaction.getOutputsValue()) {
-                    System.out.println("#Inputs are note equal to outputs on Transaction(" + t + ")");
+                    System.out.println("#Inputs are note equal to outputs on Transaction(" + iterTransaction + ")");
                     return false;
                 }
 
@@ -106,12 +111,12 @@ public class JavaChain {
                     tempOutput = tempUTXOs.get(input.transactionOutputId);
 
                     if (tempOutput == null) {
-                        System.out.println("#Referenced input on Transaction(" + t + ") is Missing");
+                        System.out.println("#Referenced input on Transaction(" + iterTransaction + ") is Missing");
                         return false;
                     }
 
                     if (input.UTXO.value != tempOutput.value) {
-                        System.out.println("#Referenced input Transaction(" + t + ") value is Invalid");
+                        System.out.println("#Referenced input Transaction(" + iterTransaction + ") value is Invalid");
                         return false;
                     }
 
@@ -123,11 +128,11 @@ public class JavaChain {
                 }
 
                 if (currentTransaction.outputs.get(0).reciepient != currentTransaction.reciepient) {
-                    System.out.println("#Transaction(" + t + ") output reciepient is not who it should be");
+                    System.out.println("#Transaction(" + iterTransaction + ") output reciepient is not who it should be");
                     return false;
                 }
                 if (currentTransaction.outputs.get(1).reciepient != currentTransaction.sender) {
-                    System.out.println("#Transaction(" + t + ") output 'change' is not sender.");
+                    System.out.println("#Transaction(" + iterTransaction + ") output 'change' is not sender.");
                     return false;
                 }
 
