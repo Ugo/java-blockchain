@@ -24,7 +24,7 @@ public class Wallet {
     //returns balance and stores the UTXO's owned by this wallet in this.UTXOs
     public float getBalance() {
         float total = 0;
-        for (Map.Entry<String, TransactionOutput> item : JavaChain.UTXOs.entrySet()) {
+        for (Map.Entry<String, TransactionOutput> item : JavaChain.getInstance().getUTXOs().entrySet()) {
             TransactionOutput UTXO = item.getValue();
             if (UTXO.belongsTo(publicKey)) {
                 UTXOs.put(UTXO.hash, UTXO);

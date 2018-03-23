@@ -32,7 +32,7 @@ public class Transaction {
         );
     }
 
-    //Signs all the data we dont wish to be tampered with.
+    //Signs all the data we don't wish to be tampered with.
     public void generateSignature(PrivateKey privateKey) {
         String data = StringUtil.getStringFromKey(sender) + StringUtil.getStringFromKey(reciepient) + Float.toString(value);
         signature = StringUtil.applyECDSASig(privateKey, data);
@@ -54,11 +54,11 @@ public class Transaction {
 
         //gather transaction inputs (Make sure they are unspent):
         for (TransactionInput i : inputs) {
-            i.UTXO = JavaChain.UTXOs.get(i.transactionOutputId);
+            i.UTXO = JavaChain.getInstance().getUTXOs().get(i.transactionOutputId);
         }
 
         //check if transaction is valid:
-        if (getInputsValue() < JavaChain.minimumTransaction) {
+        if (getInputsValue() < JavaChain.getInstance().getMinimumTransaction()) {
             System.out.println("#Transaction Inputs to small: " + getInputsValue());
             return false;
         }
@@ -71,13 +71,13 @@ public class Transaction {
 
         //add outputs to Unspent list
         for (TransactionOutput o : outputs) {
-            JavaChain.UTXOs.put(o.hash, o);
+            JavaChain.getInstance().getUTXOs().put(o.hash, o);
         }
 
         //remove transaction inputs from UTXO lists as spent:
         for (TransactionInput i : inputs) {
             if (i.UTXO == null) continue; //if Transaction can't be found skip it
-            JavaChain.UTXOs.remove(i.UTXO.hash);
+            JavaChain.getInstance().getUTXOs().remove(i.UTXO.hash);
         }
 
         return true;

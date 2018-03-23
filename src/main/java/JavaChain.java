@@ -4,31 +4,21 @@ import java.util.HashMap;
 
 public class JavaChain {
 
-    // TODO: this class should be a singleton since there is only one chain
+    private static JavaChain instance = null;
 
-    public static ArrayList<Block> blockchain = new ArrayList<>();
-    public static HashMap<String, TransactionOutput> UTXOs = new HashMap<>();
+    private static ArrayList<Block> blockchain = new ArrayList<>();
+    private static HashMap<String, TransactionOutput> UTXOs = new HashMap<>();
+    private static int difficulty = 5;
+    private static float minimumTransaction = 0.1f;
+    private static Transaction genesisTransaction;
+    private static Wallet genesisWallet;
 
-    public static int difficulty = 5;
-    public static float minimumTransaction = 0.1f;
-    public static Wallet walletA;
-    public static Wallet walletB;
-    public static Transaction genesisTransaction;
+    private JavaChain(){
+        // build the genesis transaction of the chain
+        genesisWallet = WalletFactory.create();
 
-
-    // TODO: everything done in this method should be done in a separate class
-    public static void main(String[] args) {
-        //add our blocks to the blockchain ArrayList:
-        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider()); //Setup Bouncey castle as a Security Provider
-
-        //Create wallets:
-        walletA = WalletFactory.create();
-        walletB = WalletFactory.create();
-        Wallet coinbase = WalletFactory.create();
-
-        //create genesis transaction, which sends 100 NoobCoin to walletA:
-        genesisTransaction = new Transaction(coinbase.getPublicKey(), walletA.getPublicKey(), 100f, null);
-        genesisTransaction.generateSignature(coinbase.privateKey);     //manually sign the genesis transaction
+        genesisTransaction = new Transaction(genesisWallet.getPublicKey(), genesisWallet.getPublicKey(), 100f, null);
+        genesisTransaction.generateSignature(genesisWallet.privateKey);     //manually sign the genesis transaction
         genesisTransaction.transactionId = "0"; //manually set the transaction hash
         genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.reciepient, genesisTransaction.value, genesisTransaction.transactionId)); //manually add the Transactions Output
         UTXOs.put(genesisTransaction.outputs.get(0).hash, genesisTransaction.outputs.get(0)); //its important to store our first transaction in the UTXOs list.
@@ -37,34 +27,36 @@ public class JavaChain {
         Block genesis = new Block("0");
         genesis.addTransaction(genesisTransaction);
         addBlock(genesis);
-
-        //testing
-        Block block1 = new Block(genesis.getHash());
-        System.out.println("\nWalletA's balance is: " + walletA.getBalance());
-        System.out.println("\nWalletA is Attempting to send funds (40) to WalletB...");
-        block1.addTransaction(walletA.sendFunds(walletB.getPublicKey(), 40f));
-        addBlock(block1);
-        System.out.println("\nWalletA's balance is: " + walletA.getBalance());
-        System.out.println("WalletB's balance is: " + walletB.getBalance());
-
-        Block block2 = new Block(block1.getHash());
-        System.out.println("\nWalletA Attempting to send more funds (1000) than it has...");
-        block2.addTransaction(walletA.sendFunds(walletB.getPublicKey(), 1000f));
-        addBlock(block2);
-        System.out.println("\nWalletA's balance is: " + walletA.getBalance());
-        System.out.println("WalletB's balance is: " + walletB.getBalance());
-
-        Block block3 = new Block(block2.getHash());
-        System.out.println("\nWalletB is Attempting to send funds (20) to WalletA...");
-        block3.addTransaction(walletB.sendFunds(walletA.getPublicKey(), 20));
-        addBlock(block3);
-        System.out.println("\nWalletA's balance is: " + walletA.getBalance());
-        System.out.println("WalletB's balance is: " + walletB.getBalance());
-        
-        isChainValid();
     }
 
-    public static Boolean isChainValid() {
+    public static JavaChain getInstance(){
+        if (instance == null){
+            instance = new JavaChain();
+        }
+
+        return instance;
+    }
+
+    public Wallet getGenesisWallet(){
+        return genesisWallet;
+    }
+
+    public String getLastBlockHash(){
+        if (blockchain.size() > 0){
+            return blockchain.get(blockchain.size() - 1).getHash();
+        } else {
+            return "";
+        }
+    }
+    public float getMinimumTransaction(){
+        return minimumTransaction;
+    }
+
+    public HashMap<String, TransactionOutput> getUTXOs(){
+        return UTXOs;
+    }
+
+    public static Boolean isValid() {
         Block currentBlock;
         Block previousBlock;
         String hashTarget = new String(new char[difficulty]).replace('\0', '0');
@@ -143,8 +135,9 @@ public class JavaChain {
         return true;
     }
 
-    public static void addBlock(Block newBlock) {
+    public void addBlock(Block newBlock) {
         newBlock.mine(difficulty);
         blockchain.add(newBlock);
+        System.out.println("#A new block has been added to the chain");
     }
 }
