@@ -30,9 +30,7 @@ public class JavaChain {
     }
 
     public static JavaChain getInstance(){
-        if (instance == null){
-            instance = new JavaChain();
-        }
+        if (instance == null) instance = new JavaChain();
 
         return instance;
     }
@@ -60,7 +58,7 @@ public class JavaChain {
         Block currentBlock;
         Block previousBlock;
         String hashTarget = new String(new char[difficulty]).replace('\0', '0');
-        HashMap<String, TransactionOutput> tempUTXOs = new HashMap<String, TransactionOutput>(); //a temporary working list of unspent transactions at a given block state.
+        HashMap<String, TransactionOutput> tempUTXOs = new HashMap<>();
         tempUTXOs.put(genesisTransaction.outputs.get(0).hash, genesisTransaction.outputs.get(0));
 
         //loop through blockchain to check hashes:

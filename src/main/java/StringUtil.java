@@ -10,9 +10,9 @@ public class StringUtil {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             //Applies sha256 to our input,
             byte[] hash = digest.digest(input.getBytes("UTF-8"));
-            StringBuffer hexString = new StringBuffer(); // This will contain hash as hexidecimal
-            for (int i = 0; i < hash.length; i++) {
-                String hex = Integer.toHexString(0xff & hash[i]);
+            StringBuilder hexString = new StringBuilder(); // This will contain hash as hexidecimal
+            for (byte aHash : hash) {
+                String hex = Integer.toHexString(0xff & aHash);
                 if (hex.length() == 1) hexString.append('0');
                 hexString.append(hex);
             }
@@ -25,14 +25,13 @@ public class StringUtil {
     //Applies ECDSA Signature and returns the result ( as bytes ).
     public static byte[] applyECDSASig(PrivateKey privateKey, String input) {
         Signature dsa;
-        byte[] output = new byte[0];
+        byte[] output;
         try {
             dsa = Signature.getInstance("ECDSA", "BC");
             dsa.initSign(privateKey);
             byte[] strByte = input.getBytes();
             dsa.update(strByte);
-            byte[] realSig = dsa.sign();
-            output = realSig;
+            output = dsa.sign();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -71,7 +70,6 @@ public class StringUtil {
             count = treeLayer.size();
             previousTreeLayer = treeLayer;
         }
-        String merkleRoot = (treeLayer.size() == 1) ? treeLayer.get(0) : "";
-        return merkleRoot;
+        return (treeLayer.size() == 1) ? treeLayer.get(0) : "";
     }
 }
