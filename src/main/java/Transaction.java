@@ -1,8 +1,6 @@
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class Transaction {
 
@@ -73,13 +71,13 @@ public class Transaction {
 
         //add outputs to Unspent list
         for (TransactionOutput o : outputs) {
-            JavaChain.UTXOs.put(o.id, o);
+            JavaChain.UTXOs.put(o.hash, o);
         }
 
         //remove transaction inputs from UTXO lists as spent:
         for (TransactionInput i : inputs) {
             if (i.UTXO == null) continue; //if Transaction can't be found skip it
-            JavaChain.UTXOs.remove(i.UTXO.id);
+            JavaChain.UTXOs.remove(i.UTXO.hash);
         }
 
         return true;

@@ -29,9 +29,9 @@ public class JavaChain {
         //create genesis transaction, which sends 100 NoobCoin to walletA:
         genesisTransaction = new Transaction(coinbase.getPublicKey(), walletA.getPublicKey(), 100f, null);
         genesisTransaction.generateSignature(coinbase.privateKey);     //manually sign the genesis transaction
-        genesisTransaction.transactionId = "0"; //manually set the transaction id
+        genesisTransaction.transactionId = "0"; //manually set the transaction hash
         genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.reciepient, genesisTransaction.value, genesisTransaction.transactionId)); //manually add the Transactions Output
-        UTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0)); //its important to store our first transaction in the UTXOs list.
+        UTXOs.put(genesisTransaction.outputs.get(0).hash, genesisTransaction.outputs.get(0)); //its important to store our first transaction in the UTXOs list.
 
         System.out.println("Creating and Mining Genesis block... ");
         Block genesis = new Block("0");
@@ -69,7 +69,7 @@ public class JavaChain {
         Block previousBlock;
         String hashTarget = new String(new char[difficulty]).replace('\0', '0');
         HashMap<String, TransactionOutput> tempUTXOs = new HashMap<String, TransactionOutput>(); //a temporary working list of unspent transactions at a given block state.
-        tempUTXOs.put(genesisTransaction.outputs.get(0).id, genesisTransaction.outputs.get(0));
+        tempUTXOs.put(genesisTransaction.outputs.get(0).hash, genesisTransaction.outputs.get(0));
 
         //loop through blockchain to check hashes:
         for (int iterBlock = 1; iterBlock < blockchain.size(); iterBlock++) {
@@ -124,14 +124,14 @@ public class JavaChain {
                 }
 
                 for (TransactionOutput output : currentTransaction.outputs) {
-                    tempUTXOs.put(output.id, output);
+                    tempUTXOs.put(output.hash, output);
                 }
 
-                if (currentTransaction.outputs.get(0).reciepient != currentTransaction.reciepient) {
+                if (currentTransaction.outputs.get(0).recipient != currentTransaction.reciepient) {
                     System.out.println("#Transaction(" + iterTransaction + ") output reciepient is not who it should be");
                     return false;
                 }
-                if (currentTransaction.outputs.get(1).reciepient != currentTransaction.sender) {
+                if (currentTransaction.outputs.get(1).recipient != currentTransaction.sender) {
                     System.out.println("#Transaction(" + iterTransaction + ") output 'change' is not sender.");
                     return false;
                 }
