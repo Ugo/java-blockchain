@@ -54,7 +54,7 @@ public class JavaChain {
         return UTXOs;
     }
 
-    public static Boolean isValid() {
+    public Boolean isValid() {
         Block currentBlock;
         Block previousBlock;
         String hashTarget = new String(new char[difficulty]).replace('\0', '0');
@@ -67,19 +67,7 @@ public class JavaChain {
             currentBlock = blockchain.get(iterBlock);
             previousBlock = blockchain.get(iterBlock - 1);
 
-            //compare registered hash and calculated hash:
-            if (!currentBlock.getHash().equals(currentBlock.calculateHash())) {
-                System.out.println("#Current Hashes not equal");
-                return false;
-            }
-            //compare previous hash and registered previous hash
-            if (!previousBlock.getHash().equals(currentBlock.getPreviousHash())) {
-                System.out.println("#Previous Hashes not equal");
-                return false;
-            }
-            //check if hash is solved
-            if (!currentBlock.getHash().substring(0, difficulty).equals(hashTarget)) {
-                System.out.println("#This block hasn't been mined");
+            if (!areHashesCorrect(previousBlock, currentBlock, hashTarget)){
                 return false;
             }
 
@@ -130,6 +118,28 @@ public class JavaChain {
 
         }
         System.out.println("Blockchain is valid");
+        return true;
+    }
+
+    private boolean areHashesCorrect(Block previousBlock, Block currentBlock, String hashTarget){
+        //compare registered hash and calculated hash:
+        if (!currentBlock.getHash().equals(currentBlock.calculateHash())) {
+            System.out.println("#Current Hashes not equal");
+            return false;
+        }
+
+        //compare previous hash and registered previous hash
+        if (!previousBlock.getHash().equals(currentBlock.getPreviousHash())) {
+            System.out.println("#Previous Hashes not equal");
+            return false;
+        }
+
+        //check if hash matches the target
+        if (!currentBlock.getHash().substring(0, difficulty).equals(hashTarget)) {
+            System.out.println("#This block hasn't been mined");
+            return false;
+        }
+
         return true;
     }
 
