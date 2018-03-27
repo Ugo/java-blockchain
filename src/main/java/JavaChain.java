@@ -71,51 +71,9 @@ public class JavaChain {
                 return false;
             }
 
-            //loop thru blockchains transactions:
-            TransactionOutput tempOutput;
-            for (int iterTransaction = 0; iterTransaction < currentBlock.getTransactions().size(); iterTransaction++) {
-                Transaction currentTransaction = currentBlock.getTransactions().get(iterTransaction);
-
-                if (!currentTransaction.verifiySignature()) {
-                    System.out.println("#Signature on Transaction(" + iterTransaction + ") is Invalid");
-                    return false;
-                }
-                if (currentTransaction.getInputsValue() != currentTransaction.getOutputsValue()) {
-                    System.out.println("#Inputs are note equal to outputs on Transaction(" + iterTransaction + ")");
-                    return false;
-                }
-
-                for (TransactionInput input : currentTransaction.inputs) {
-                    tempOutput = tempUTXOs.get(input.transactionOutputId);
-
-                    if (tempOutput == null) {
-                        System.out.println("#Referenced input on Transaction(" + iterTransaction + ") is Missing");
-                        return false;
-                    }
-
-                    if (input.UTXO.value != tempOutput.value) {
-                        System.out.println("#Referenced input Transaction(" + iterTransaction + ") value is Invalid");
-                        return false;
-                    }
-
-                    tempUTXOs.remove(input.transactionOutputId);
-                }
-
-                for (TransactionOutput output : currentTransaction.outputs) {
-                    tempUTXOs.put(output.hash, output);
-                }
-
-                if (currentTransaction.outputs.get(0).recipient != currentTransaction.reciepient) {
-                    System.out.println("#Transaction(" + iterTransaction + ") output reciepient is not who it should be");
-                    return false;
-                }
-                if (currentTransaction.outputs.get(1).recipient != currentTransaction.sender) {
-                    System.out.println("#Transaction(" + iterTransaction + ") output 'change' is not sender.");
-                    return false;
-                }
-
+            if (!areTransactionsCorrect(currentBlock, tempUTXOs)){
+                return false;
             }
-
         }
         System.out.println("Blockchain is valid");
         return true;
@@ -140,6 +98,55 @@ public class JavaChain {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean areTransactionsCorrect(Block currentBlock, HashMap<String, TransactionOutput> tempUTXOs){
+        // loop through all the transactions
+        TransactionOutput tempOutput;
+        int countTransaction = 0;
+        for (Transaction transaction:currentBlock.getTransactions()) {
+
+            if (!transaction.verifiySignature()) {
+                System.out.println("#Signature on Transaction(" + countTransaction + ") is Invalid");
+                return false;
+            }
+            if (transaction.getInputsValue() != transaction.getOutputsValue()) {
+                System.out.println("#Inputs are note equal to outputs on Transaction(" + countTransaction + ")");
+                return false;
+            }
+
+            for (TransactionInput input : transaction.inputs) {
+                tempOutput = tempUTXOs.get(input.transactionOutputId);
+
+                if (tempOutput == null) {
+                    System.out.println("#Referenced input on Transaction(" + countTransaction + ") is Missing");
+                    return false;
+                }
+
+                if (input.UTXO.value != tempOutput.value) {
+                    System.out.println("#Referenced input Transaction(" + countTransaction + ") value is Invalid");
+                    return false;
+                }
+
+                tempUTXOs.remove(input.transactionOutputId);
+            }
+
+            for (TransactionOutput output : transaction.outputs) {
+                tempUTXOs.put(output.hash, output);
+            }
+
+            if (transaction.outputs.get(0).recipient != transaction.reciepient) {
+                System.out.println("#Transaction(" + countTransaction + ") output reciepient is not who it should be");
+                return false;
+            }
+            if (transaction.outputs.get(1).recipient != transaction.sender) {
+                System.out.println("#Transaction(" + countTransaction + ") output 'change' is not sender.");
+                return false;
+            }
+
+            countTransaction++;
+        }
         return true;
     }
 
