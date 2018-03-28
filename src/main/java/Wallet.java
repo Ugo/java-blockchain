@@ -35,14 +35,14 @@ public class Wallet {
     }
 
     //Generates and returns a new transaction from this wallet.
-    public Transaction sendFunds(PublicKey _recipient, float value) {
-        if (getBalance() < value) { //gather balance and check funds.
+    public Transaction sendFunds(PublicKey recipient, float value) {
+
+        if (getBalance() < value) {
             System.out.println("#Not Enough funds to send transaction. Transaction Discarded.");
             return null;
         }
-        //create array list of inputs
-        ArrayList<TransactionInput> inputs = new ArrayList<>();
 
+        ArrayList<TransactionInput> inputs = new ArrayList<>();
         float total = 0;
         for (Map.Entry<String, TransactionOutput> item : UTXOs.entrySet()) {
             TransactionOutput UTXO = item.getValue();
@@ -51,7 +51,7 @@ public class Wallet {
             if (total > value) break;
         }
 
-        Transaction newTransaction = new Transaction(publicKey, _recipient, value, inputs);
+        Transaction newTransaction = new Transaction(publicKey, recipient, value, inputs);
         newTransaction.generateSignature(privateKey);
 
         for (TransactionInput input : inputs) {

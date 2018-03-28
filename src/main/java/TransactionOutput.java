@@ -6,9 +6,9 @@ public class TransactionOutput {
     public String hash;
     public PublicKey recipient;
     public float value; //the amount of coins they own
-    public String parentTransactionId; //the hash of the transaction this output was created in
+    private String parentTransactionId; //the hash of the transaction this output was created in
 
-    public TransactionOutput(PublicKey recipient, float value, String parentTransactionId) {
+    TransactionOutput(PublicKey recipient, float value, String parentTransactionId) {
         this.recipient = recipient;
         this.value = value;
         this.parentTransactionId = parentTransactionId;

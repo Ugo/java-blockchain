@@ -1,4 +1,3 @@
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,7 +19,7 @@ public class JavaChain {
         genesisTransaction = new Transaction(genesisWallet.getPublicKey(), genesisWallet.getPublicKey(), 100f, null);
         genesisTransaction.generateSignature(genesisWallet.privateKey);     //manually sign the genesis transaction
         genesisTransaction.transactionId = "0"; //manually set the transaction hash
-        genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.reciepient, genesisTransaction.value, genesisTransaction.transactionId)); //manually add the Transactions Output
+        genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.recipient, genesisTransaction.value, genesisTransaction.transactionId)); //manually add the Transactions Output
         UTXOs.put(genesisTransaction.outputs.get(0).hash, genesisTransaction.outputs.get(0)); //its important to store our first transaction in the UTXOs list.
 
         System.out.println("Creating and Mining Genesis block... ");
@@ -136,8 +135,8 @@ public class JavaChain {
                 tempUTXOs.put(output.hash, output);
             }
 
-            if (transaction.outputs.get(0).recipient != transaction.reciepient) {
-                System.out.println("#Transaction(" + countTransaction + ") output reciepient is not who it should be");
+            if (transaction.outputs.get(0).recipient != transaction.recipient) {
+                System.out.println("#Transaction(" + countTransaction + ") output recipient is not who it should be");
                 return false;
             }
             if (transaction.outputs.get(1).recipient != transaction.sender) {
